@@ -1,0 +1,62 @@
+
+{block title}Přehled{/block}
+{block content}
+<div class="container">
+
+    <div class="page">
+        <h1>Přehled projektů</h1>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Název</th>
+                    <th>Datum odevzdání</th>
+                    <th>Typ projektu</th>
+                    <th>Webový projekt</th>
+                    <th>Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {if $projectsList != null}
+                        {foreach $projectsList as $project}
+                        <tr>
+                            <td>{$project->id}</td>
+                            <td>{$project->name}</td>
+                            <td>{$project->deadline|date:"d.m.Y"}</td>
+                            <td>{if $project->type == 0}Časově omezený{else}Kontinuální{/if}</td>
+                            <td>{if $project->webProject == 1}Ano{else}Ne{/if}</td>
+                            <td>
+                                <a href="{plink Homepage:EditProject $project->id}"<button type="button" class="btn btn-warning btn-xs">Upravit</button></a>
+                                <a class="deleteButton" href="{plink Homepage:DeleteProject $project->id}" data-message="{$project->name}"><button type="button" class="btn btn-danger btn-xs">Smazat</button></a>
+                            </td>
+                        </tr>
+                    {/foreach}
+                {else}
+                    <tr>
+                        <td colspan="6">V databázi není uložen žádný projekt</td>
+                    </tr>
+                {/if}
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div id="dialog-confirm" title="Odstranit projekt?">
+        <p id="deleteAlert"></p>
+    </div>
+
+</div>
+{/block}
+
+{block head}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{/block}
+
+{block script}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{$basePath}/js/deleteDialog.js"></script>
+{/block}
+
+
