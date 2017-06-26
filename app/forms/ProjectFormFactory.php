@@ -8,6 +8,9 @@ use App\Model;
 use Tomaj\Form\Renderer\BootstrapVerticalRenderer;
 
 class ProjectFormFactory {
+    
+    const
+            MAX_USERS_IN_TEAM = 20;
 
     use Nette\SmartObject;
 
@@ -24,12 +27,14 @@ class ProjectFormFactory {
 
     public function create(callable $onSuccess, $id) {
         $editData = $this->setDefaults($id);
+        $usersList = $this->manager->getUsers();
 
         $form = $this->factory->create();
         $form->setRenderer(new BootstrapVerticalRenderer);
 
         $form->addHidden("id")
                 ->setValue($editData["id"]);
+                
 
         $form->addText("name", "Název projektu:")
                 ->setRequired("Vyplňte název projektu")
@@ -50,6 +55,17 @@ class ProjectFormFactory {
 
         $form->addCheckbox("webProject", "Webový projekt")
                 ->setValue($editData["webProject"]);
+        
+        
+        $con1 = $form->addContainer("users");
+        $users = $editData["users"];
+        
+        for ($i=0; $i<self::MAX_USERS_IN_TEAM; $i++) {
+            $users[$i] = isset($users[$i]) ? $users[$i] : null;
+            $con1->addSelect($i, null, $usersList)
+                ->setPrompt("Vyberte pracovníka")
+                ->setValue($users[$i]);
+        }
 
         $form->addsubmit("send", "Vložit");
 
@@ -63,9 +79,9 @@ class ProjectFormFactory {
             }
             
             if ($values->id) {
-                $this->manager->update($values->id, $values->name, $date, $values->type, $values->webProject);
+                $this->manager->update($values->id, $values->name, $date, $values->type, $values->webProject, $values->users);
             } else {
-                $this->manager->add($values->name, $date, $values->type, $values->webProject);
+                $this->manager->add($values->name, $date, $values->type, $values->webProject, $values->users);
             }
             $onSuccess();
         };
@@ -75,27 +91,28 @@ class ProjectFormFactory {
     
     private function setDefaults($id) {
         if ($id) {
-            
-        
-       
+           
+        $userList = $this->manager->getUsersId($id);
         $editData = $this->manager->getData($id);  
         $default = [
             "id" => $editData->id,
             "name" => $editData->name,
             "date" => date("d.m.Y", strtotime(preg_replace('/\s+/', '', $editData->deadline))),
             "type" => $editData->type,
-            "webProject" => $editData->webProject
+            "webProject" => $editData->webProject,
+            "users" => $userList
         ];
+        
         } else {
             $default = [
             "id" => null,
             "name" => null,
             "date" => null,
             "type" => null,
-            "webProject" => null
+            "webProject" => null,
+            "users" => null
         ];
         }
-        
         return $default;
     }
 

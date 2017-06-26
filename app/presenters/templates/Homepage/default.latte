@@ -1,13 +1,13 @@
-
-{block title}Přehled{/block}
 {block content}
 <div class="container">
 
     <div class="page">
-        <h1>Přehled projektů</h1>
-        <table class="table table-bordered table-hover">
+
+        <h1 n:block="title">Přehled projektů</h1>
+        <table class="table table-bordered table-hover" id="list">
             <thead>
                 <tr>
+                    <th></th>
                     <th>ID</th>
                     <th>Název</th>
                     <th>Datum odevzdání</th>
@@ -21,6 +21,7 @@
                     {if $projectsList != null}
                         {foreach $projectsList as $project}
                         <tr>
+                            <td class="detail-control"></td>
                             <td>{$project->id}</td>
                             <td>{$project->name}</td>
                             <td>{$project->deadline|date:"d.m.Y"}</td>
@@ -31,13 +32,23 @@
                                 <a class="deleteButton" href="{plink Homepage:DeleteProject $project->id}" data-message="{$project->name}"><button type="button" class="btn btn-danger btn-xs">Smazat</button></a>
                             </td>
                         </tr>
-                    {/foreach}
-                {else}
-                    <tr>
-                        <td colspan="6">V databázi není uložen žádný projekt</td>
+                        <tr class="detail-toggle" style="display: none;">
+                            <td colspan="7">
+                                <p><strong>Tým</strong></p>
+                                <p>
+                                    {foreach $project->related('project_user') as $projectUser}
+                                        {$projectUser->ref('users', 'user')->name}{sep}, {/sep}
+                                    {/foreach}
+                                </p>
+                            </td>
                     </tr>
-                {/if}
+                {/foreach}
+            {else}
+                <tr>
+                    <td colspan="7">V databázi není uložen žádný projekt</td>
                 </tr>
+            {/if}
+            </tr>
             </tbody>
         </table>
 
@@ -57,6 +68,7 @@
 {block script}
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="{$basePath}/js/deleteDialog.js"></script>
+<script src="{$basePath}/js/detail.js"></script>
 {/block}
 
 

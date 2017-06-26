@@ -1,0 +1,51 @@
+{block title}Pracovníci{/block}
+
+{block content}
+<div class="container">
+    <div class="page">
+        <div class="col-md-6">
+            <h1>Seznam</h1>
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Jméno</th>
+                        <th>Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {if $userList != null}
+                        {foreach $userList as $users}
+                            <tr>
+                                <td>{$users->id}</td>
+                                <td>{$users->name}</td>
+                                <td>
+                                    <a href="{plink Homepage:EditUser $users->id}"<button type="button" class="btn btn-warning btn-xs">Upravit</button></a>
+                                    <a href="{plink Homepage:DeleteUser $users->id}"><button type="button" class="btn btn-danger btn-xs">Smazat</button></a>
+                                </td>
+                            </tr>   
+                        {/foreach}
+                    {else}
+                        <tr>
+                            <td colspan="3">V databázi není uložen žádný pracovník</td>
+                        </tr>
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h1>Přidat</h1>
+            <div class="form">
+                {control userForm}
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+{/block}
+
+{block script}
+<script src="{$basePath}/js/deleteDialog.js"></script>
+{/block}
